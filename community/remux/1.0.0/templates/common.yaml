@@ -1,0 +1,12 @@
+{{/* Apply helm migrations */}}
+{{- include "ix.v1.common.loader.init" . -}}
+
+{{/* Merge the templates with Values */}}
+{{- $_ := mustMergeOverwrite .Values (include "remux.workload" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "remux.service" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "remux.persistence" $ | fromYaml) -}}
+
+{{/* Create the configmap for portal manually*/}}
+{{- include "remux.portal" $ -}}
+
+{{- include "ix.v1.common.loader.apply" . -}}

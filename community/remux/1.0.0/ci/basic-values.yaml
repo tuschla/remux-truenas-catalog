@@ -1,0 +1,3 @@
+remuxStorage:
+  data:
+    type: pvc

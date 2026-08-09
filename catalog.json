@@ -1,0 +1,40 @@
+{
+    "remux": {
+        "app_readme": "<h1>Remux</h1>\n<p><a href=\"https://github.com/lostb1t/remux\">Remux</a> is a self-hosted media server with a Jellyfin-compatible API. It brings Stremio add-ons, local files, WebDAV sources, and torrents together under one roof, and works with any Jellyfin client without changes.</p>\n<h2>Installation</h2>\n<p>Create a new Remux application and follow the setup wizard.</p>\n<h2>Configuration</h2>\n<ul>\n<li>**Web UI / API Port**: The NodePort used to reach the Remux web UI and Jellyfin-compatible API.</li>\n<li>**Timezone**: Timezone for the Remux container.</li>\n<li>**Data Storage**: Persistent storage mounted at `/data` (SQLite database, logs, torrents, and transcode scratch). Defaults to an ixVolume.</li>\n<li>**Resources**: CPU and memory limits. Remux transcodes with the bundled Jellyfin ffmpeg; software transcoding of 1080p content benefits from ~4 CPU cores.</li>\n</ul>\n<h2>Usage</h2>\n<p>1. Open the web UI via the portal button (or `http://<node-ip>:<web-port>`).</p>\n<p>2. In the dashboard, add your Stremio add-on manifests (for example a self-hosted <a href=\"https://github.com/Viren070/AIOStreams\">AIOStreams</a> instance) and build libraries.</p>\n<p>3. Connect any Jellyfin-compatible client (Jellyfin for webOS, Swiftfin, Infuse, Jellyfin for Android, etc.) to `http://<node-ip>:<web-port>`.</p>\n<h2>Notes</h2>\n<ul>\n<li>The app runs as root.</li>\n<li>Transcoding uses the bundled Jellyfin ffmpeg; hardware acceleration requires passing a GPU to the container.</li>\n</ul>",
+        "categories": [
+            "media"
+        ],
+        "description": "Remux is a self-hosted media server with a Jellyfin-compatible API that brings Stremio add-ons, local files, and WebDAV sources together under one roof.",
+        "healthy": true,
+        "healthy_error": null,
+        "home": "https://github.com/lostb1t/remux",
+        "location": "/custom/community/remux",
+        "latest_version": "1.0.0",
+        "latest_app_version": "0.23.1",
+        "latest_human_version": "0.23.1_1.0.0",
+        "last_update": "2026-08-09 00:00:00",
+        "name": "remux",
+        "recommended": false,
+        "title": "Remux",
+        "maintainers": [
+            {
+                "name": "truenas",
+                "url": "https://www.truenas.com/",
+                "email": "dev@ixsystems.com"
+            }
+        ],
+        "tags": [
+            "media",
+            "streaming",
+            "jellyfin",
+            "stremio",
+            "debrid"
+        ],
+        "screenshots": [],
+        "sources": [
+            "https://github.com/lostb1t/remux",
+            "https://github.com/truenas/charts/tree/master/charts/remux"
+        ],
+        "icon_url": "https://media.sys.truenas.net/apps/remux/icons/icon.png"
+    }
+}

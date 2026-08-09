@@ -1,0 +1,276 @@
+groups:
+  - name: Remux Configuration
+    description: Configure Remux
+  - name: Advanced Pod Configuration
+    description: Configure Advanced Pod Options for Remux
+  - name: Network Configuration
+    description: Configure Network for Remux
+  - name: Storage Configuration
+    description: Configure Storage for Remux
+  - name: Resources Configuration
+    description: Configure Resources for Remux
+
+portals:
+  web_portal:
+    protocols:
+      - "$kubernetes-resource_configmap_portal_protocol"
+    host:
+      - "$kubernetes-resource_configmap_portal_host"
+    ports:
+      - "$kubernetes-resource_configmap_portal_port"
+    path: "$kubernetes-resource_configmap_portal_path"
+
+questions:
+  - variable: TZ
+    group: Remux Configuration
+    label: Timezone
+    schema:
+      type: string
+      default: Etc/UTC
+      required: true
+      $ref:
+        - definitions/timezone
+
+  - variable: remuxNetwork
+    label: ""
+    group: Network Configuration
+    schema:
+      type: dict
+      attrs:
+        - variable: webPort
+          label: Web UI / API Port
+          description: The NodePort for the Remux web UI and Jellyfin-compatible API.
+          schema:
+            type: int
+            min: 9000
+            max: 65535
+            default: 30009
+            required: true
+
+  - variable: remuxConfig
+    label: ""
+    group: Remux Configuration
+    schema:
+      type: dict
+      attrs:
+        - variable: additionalEnvs
+          label: Additional Environment Variables
+          description: Configure additional environment variables for Remux.
+          schema:
+            type: list
+            default: []
+            items:
+              - variable: env
+                label: Environment Variable
+                schema:
+                  type: dict
+                  attrs:
+                    - variable: name
+                      label: Name
+                      schema:
+                        type: string
+                        required: true
+                    - variable: value
+                      label: Value
+                      schema:
+                        type: string
+                        required: true
+
+  - variable: podOptions
+    label: ""
+    group: Advanced Pod Configuration
+    schema:
+      type: dict
+      attrs:
+        - variable: dnsConfig
+          label: Advanced DNS Configuration
+          schema:
+            type: dict
+            attrs:
+              - variable: options
+                label: DNS Options
+                schema:
+                  type: list
+                  items:
+                    - variable: optionsEntry
+                      label: DNS Option Entry
+                      schema:
+                        type: dict
+                        attrs:
+                          - variable: name
+                            label: Option Name
+                            schema:
+                              type: string
+                              required: true
+                          - variable: value
+                            label: Option Value
+                            schema:
+                              type: string
+                              required: true
+
+  - variable: remuxStorage
+    label: ""
+    group: Storage Configuration
+    schema:
+      type: dict
+      attrs:
+        - variable: data
+          label: Remux Data Storage
+          description: The path to store Remux data (SQLite database, logs, torrents and transcode scratch).
+          schema:
+            type: dict
+            attrs:
+              - variable: type
+                label: Type
+                description: "ixVolume: Is dataset created automatically by the system.\nHost Path: Is a path that already exists on the system.\n"
+                schema:
+                  type: string
+                  required: true
+                  immutable: true
+                  default: ixVolume
+                  enum:
+                    - value: hostPath
+                      description: Host Path (Path that already exists on the system)
+                    - value: ixVolume
+                      description: ixVolume (Dataset created automatically by the system)
+              - variable: ixVolumeConfig
+                label: ixVolume Configuration
+                description: The configuration for the ixVolume dataset.
+                schema:
+                  type: dict
+                  show_if:
+                    - ["type", "=", "ixVolume"]
+                  attrs:
+                    - variable: datasetName
+                      label: Dataset Name
+                      schema:
+                        type: string
+                        hidden: true
+                        $ref:
+                          - normalize/ixVolume
+                        default: ix-remux_data
+                        editable: false
+              - variable: hostPathConfig
+                label: Host Path Configuration
+                description: The configuration for the host path.
+                schema:
+                  type: dict
+                  show_if:
+                    - ["type", "=", "hostPath"]
+                  attrs:
+                    - variable: hostPath
+                      label: Host Path
+                      schema:
+                        type: hostpath
+                        required: true
+                        immutable: true
+                        $ref:
+                          - validations/lockedHostPath
+        - variable: additionalStorages
+          label: Additional Storages
+          description: Additional storage for Remux.
+          schema:
+            type: list
+            default: []
+            items:
+              - variable: storageEntry
+                label: Storage Entry
+                schema:
+                  type: dict
+                  attrs:
+                    - variable: type
+                      label: Type
+                      description: "ixVolume: Is dataset created automatically by the system.\nHost Path: Is a path that already exists on the system.\n"
+                      schema:
+                        type: string
+                        required: true
+                        immutable: true
+                        default: hostPath
+                        enum:
+                          - value: hostPath
+                            description: Host Path (Path that already exists on the system)
+                          - value: ixVolume
+                            description: ixVolume (Dataset created automatically by the system)
+                    - variable: readOnly
+                      label: Read Only
+                      description: Mount the volume read-only.
+                      schema:
+                        type: boolean
+                        default: false
+                    - variable: mountPath
+                      label: Mount Path
+                      description: The path to mount the storage inside the pod.
+                      schema:
+                        type: path
+                        required: true
+                    - variable: hostPathConfig
+                      label: Host Path Configuration
+                      schema:
+                        type: dict
+                        show_if:
+                          - ["type", "=", "hostPath"]
+                        attrs:
+                          - variable: hostPath
+                            label: Host Path
+                            schema:
+                              type: hostpath
+                              required: true
+                              $ref:
+                                - validations/lockedHostPath
+                    - variable: ixVolumeConfig
+                      label: ixVolume Configuration
+                      schema:
+                        type: dict
+                        show_if:
+                          - ["type", "=", "ixVolume"]
+                        attrs:
+                          - variable: datasetName
+                            label: Dataset Name
+                            schema:
+                              type: string
+                              hidden: true
+                              $ref:
+                                - normalize/ixVolume
+                              default: ix-remux
+                              editable: false
+
+  - variable: resources
+    group: Resources Configuration
+    label: ""
+    schema:
+      type: dict
+      attrs:
+        - variable: limits
+          label: Limits
+          schema:
+            type: dict
+            attrs:
+              - variable: cpu
+                label: CPU
+                description: CPU limit for Remux.
+                schema:
+                  type: string
+                  max_length: 6
+                  valid_chars: '^(0\.[1-9]|[1-9][0-9]*)(\.[0-9]|m?)$'
+                  valid_chars_error: |
+                    Valid CPU limit formats are</br>
+                    - Plain Integer - eg. 1</br>
+                    - Float - eg. 0.5</br>
+                    - Milicpu - eg. 500m
+                  default: "4000m"
+                  required: true
+              - variable: memory
+                label: Memory
+                description: Memory limit for Remux.
+                schema:
+                  type: string
+                  max_length: 12
+                  valid_chars: "^[1-9][0-9]*([EPTGMK]i?|e[0-9]+)?$"
+                  valid_chars_error: |
+                    Valid Memory limit formats are</br>
+                    - Suffixed with E/P/T/G/M/K - eg. 1G</br>
+                    - Suffixed with Ei/Pi/Ti/Gi/Mi/Ki - eg. 1Gi</br>
+                    - Plain Integer in bytes - eg. 1024</br>
+                    - Exponent - eg. 134e6
+                  default: "2Gi"
+                  required: true

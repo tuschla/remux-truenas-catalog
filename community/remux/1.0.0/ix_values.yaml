@@ -1,0 +1,29 @@
+image:
+  pullPolicy: IfNotPresent
+  repository: ghcr.io/lostb1t/remux
+  tag: '0.23.1'
+
+TZ: Etc/UTC
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 2Gi
+
+podOptions:
+  dnsConfig:
+    options: []
+
+remuxConfig:
+  timezone: UTC
+  additionalEnvs: []
+
+remuxNetwork:
+  webPort: 30009
+
+remuxStorage:
+  data:
+    type: ixVolume
+    ixVolumeConfig:
+      datasetName: data
+  additionalStorages: []
